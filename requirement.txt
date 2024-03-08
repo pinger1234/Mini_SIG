@@ -1,0 +1,6 @@
+xlwings
+geojson
+json
+tkinter
+tkintermapview
+tkinterdnd2
