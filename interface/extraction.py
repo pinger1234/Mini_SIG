@@ -48,15 +48,15 @@ def file_creator(repository="Geojson",fileName=" "):
     #Verifier si le repectoire existe, sinon le créer
     if not os.path.exists(repository):
         os.makedirs(repository)
-    i=1
+    i=0
     # Chemin complet du fichier
     if fileName != " ":
         cheminFichier = os.path.join(".",repository, jointure(fileName,".geojson"))
         if not os.path.isfile(cheminFichier):
             return cheminFichier
         else:
-            return os.path.join(".",repository, jointure(fileName,str(i),".geojson"))
             i+=1
+            return os.path.join(".",repository, jointure(fileName,str(i),".geojson"))
     else:
         return "ArgError: \nNom du fichier compromis"
 
