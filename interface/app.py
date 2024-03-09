@@ -14,14 +14,18 @@ file_paths = ""
 def drop(event):
     global file_paths
     file_paths = event.data
+    get_path(file_paths)
     print(file_paths)
 
-def get_path():
+def get_path(path):
     global zone_csv_text
     # zone_csv.create_text.destroy()
-    zone_csv_text = main(file_paths)
+    zone_csv_text = main(path)# retourne le chemin d'acces au fichier geojson
     # zone_csv.create_text(taill, text= zone_csv_text, anchor=W,fill="Blue", font="Arial 10 bold")
-    change_text(zone_csv_text)
+    change_text("Conversion effectuée\n avec Succès")
+    if zone_csv_text != "ArgError: \nNom du fichier compromis" and zone_csv_text != "Veuillez selection \nun fichier .csv !":
+        view_geojson(zone_csv_text)
+
 
 
 def conversion(path=""):
@@ -44,10 +48,12 @@ def affichage_dialoge():
     
 
     can = TkinterDnD.Tk()
-    can.config(bg="yellow")
+    # can.config(bg="yellow")
     can.resizable(width=False, height=False)
     can.title("Information formatage fichier CSV")
-    can_can = tk.Canvas(can, width=400, height=100, bg="yellow")
+    # icons = tk.PhotoImage(file="interface/images/info.png")
+    # can.iconphoto(True,icons)
+    can_can = tk.Canvas(can, width=400, height=100)
     can_can.pack(fill=tk.BOTH, expand=True)
 
     scrollbar = tk.Scrollbar(can, orient=tk.HORIZONTAL, command=on_scroll)
@@ -103,26 +109,42 @@ def select_file():
         ('geojson', '.geojson'),
         ('All files','*.*')
     )
-    filename = fd.askopenfilename(title='Ouvrir un fichier', initialdir="./", filetypes=filetypes)
+    filename = fd.askopenfilename(title='Ouvrir un fichier', initialdir="./interface/", filetypes=filetypes)
     view_geojson(filename)
+
+def select_file_csv():
+    filetypes = (
+        ('csv', '.csv'),
+        ('All files','*.*')
+    )
+    filename = fd.askopenfilename(title='Ouvrir un fichier', initialdir="./interface/", filetypes=filetypes)
+    get_path(filename)
+    print(filename)
 
 def view_geojson(path):
     data=read_geojson(path)
     for i in range(0, len(data[0])):
-        map_widget.set_address("Ivory coast", marker=True, text=data[1][i])
+        map_widget.set_address("Tiébissou", marker=True, text=data[1][i])
         map_widget.set_polygon(data[0][i],fill_color="springgreen",
                                    outline_color="black",
-                                   border_width=8,
+                                   border_width=3,
                                    name=data[1][i])
-    map_widget.set_zoom(10)
+    map_widget.set_zoom(1)
 
 
 # Créer une fenêtre principale
 root = TkinterDnD.Tk()
 root.geometry('800x500')
+root.title("MINI SIG")
 root.resizable(width=False, height=False) # Block window resizing
 root.config(bg="grey")
+icon = tk.PhotoImage(file="interface/images/sig.png")
+root.iconphoto(True, icon )
+
+#Variables
 zone_csv_text = "Glissez-déposez un\nfichier CSV ici"
+
+
 #creation de la zone de recuperation du fichier CSV
 zone_csv = tk.Canvas(root,bg='ivory',  height=450, width=200)
 taill= (10, 450//2)
@@ -139,7 +161,7 @@ map_widget.place(relx=.5, rely=.5, anchor=CENTER)
 
 bout_Afficher = tk.Button(root, text="VOIR GEOJSON", width=20, height=1, command=select_file)# afficher des données csv
 bout_Afficher.grid(row=4,column=1, rowspan=2)
-bout_conver = tk.Button(root, text="Conversion", width=20, height=1, command=get_path) #conversion fichier csv en geojson
+bout_conver = tk.Button(root, text="Choisir CSV", width=20, height=1, command=select_file_csv) #conversion fichier csv en geojson
 bout_conver.grid(row=4,column=3, rowspan=2)
 bout_quit = tk.Button(root, text="Quitter", command=quit, width=50, height=1)
 bout_quit.grid(row=4,column=4, rowspan=2)
